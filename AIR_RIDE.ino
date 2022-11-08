@@ -210,7 +210,7 @@ void loop()
     digitalWrite(RRVALVE_UP, HIGH);
     digitalWrite(RLVALVE_UP, HIGH);
   }
-/**
+
   if (RemoteXY.preset1 == 1) {
     AirToPreset("park");
 
@@ -219,13 +219,9 @@ void loop()
     AirToPreset("drive");
   }
   if (RemoteXY.preset3 == 1) {
-    AirToPreset("maxiumum_height");
+    AirToPreset("maximum_height");
   }
-**/
 
-  // TODO you loop code
-  // use the RemoteXY structure for data transfer
-  // do not call delay()
 
 
 }
@@ -246,33 +242,33 @@ void AirToPreset(char preset) {
   int rearPressure;
 
   if (preset == "park") {
-    frontPressure = 0;
+    frontPressure = 40;
     rearPressure = 0;
   }
   if (preset == "drive") {
-    frontPressure = 55;
-    rearPressure = 55;
+    frontPressure = 115;
+    rearPressure = 60;
   }
 
   if (preset == "maximum_height") {
-    frontPressure = 120;
+    frontPressure = 130;
     rearPressure = 120;
   }
   int frbagpressure = (int)ReadPressureFromVoltage(FR_PRESSURE);
   int flbagpressure = (int)ReadPressureFromVoltage(FL_PRESSURE);
   int rrbagpressure = (int)ReadPressureFromVoltage(RR_PRESSURE);
   int rlbagpressure = (int)ReadPressureFromVoltage(RL_PRESSURE);
-  while (flbagpressure != frontPressure &&
-         frbagpressure != frontPressure &&
-         rlbagpressure != rearPressure &&
-         rrbagpressure != rearPressure) {
+  while (!(frontPressure - 3 < flbagpressure < frontPressure + 3) &&
+         !(frontPressure - 3 < frbagpressure < frontPressure + 3) &&
+         !(rearPressure -3 < rlbagpressure < rearPressure +3) &&
+         !(rearPressure - 3 < rrbagpressure < rearPressure + 3)) {
 
     // Adjust Front Left Pressure
-    if (flbagpressure < frontPressure) {
+    if (flbagpressure < frontPressure - 3) {
       digitalWrite(FLVALVE_UP, LOW);
       digitalWrite(FLVALVE_DWN, HIGH);
     }
-    else if (flbagpressure > frontPressure) {
+    else if (flbagpressure > frontPressure + 3) {
       digitalWrite(FLVALVE_UP, HIGH);
       digitalWrite(FLVALVE_DWN, LOW);
     }
@@ -282,11 +278,11 @@ void AirToPreset(char preset) {
     }
 
     // Adjust Front Right Pressure
-    if (frbagpressure < frontPressure) {
+    if (frbagpressure < frontPressure - 3) {
       digitalWrite(FRVALVE_UP, LOW);
       digitalWrite(FRVALVE_DWN, HIGH);
     }
-    else if (frbagpressure > frontPressure) {
+    else if (frbagpressure > frontPressure + 3) {
       digitalWrite(FRVALVE_UP, HIGH);
       digitalWrite(FRVALVE_DWN, LOW);
     }
@@ -296,11 +292,11 @@ void AirToPreset(char preset) {
     }
 
     // Adjust Rear Left Pressure
-    if (rlbagpressure < rearPressure) {
+    if (rlbagpressure < rearPressure - 3) {
       digitalWrite(RLVALVE_UP, LOW);
       digitalWrite(RLVALVE_DWN, HIGH);
     }
-    else if (rlbagpressure > rearPressure) {
+    else if (rlbagpressure > rearPressure + 3) {
       digitalWrite(RLVALVE_UP, HIGH);
       digitalWrite(RLVALVE_DWN, LOW);
     }
@@ -310,11 +306,11 @@ void AirToPreset(char preset) {
     }
 
     // Adjust Rear Right Pressure
-    if (rrbagpressure < rearPressure) {
+    if (rrbagpressure < rearPressure - 3) {
       digitalWrite(RRVALVE_UP, LOW);
       digitalWrite(RRVALVE_DWN, HIGH);
     }
-    else if (rrbagpressure > rearPressure) {
+    else if (rrbagpressure > rearPressure + 3) {
       digitalWrite(RRVALVE_UP, HIGH);
       digitalWrite(RRVALVE_DWN, LOW);
     }
