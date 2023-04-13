@@ -97,12 +97,13 @@ struct {
 unsigned long startMillis;  //some global variables available anywhere in the program
 unsigned long currentMillis;
 const unsigned long period = 1000;
+const int 3 = 3;
 
 void setup()
 {
   RemoteXY_Init ();
 
-
+  
   // Front valves
   pinMode(FRVALVE_UP, OUTPUT);
   pinMode(FLVALVE_UP, OUTPUT);
@@ -119,7 +120,15 @@ void setup()
   pinMode(FL_PRESSURE, INPUT);
   pinMode(RL_PRESSURE, INPUT);
   startMillis = millis();
-
+  //initialize valves as closed
+  digitalWrite(FRVALVE_UP, HIGH);
+  digitalWrite(RLVALVE_UP, HIGH);
+  digitalWrite(RRVALVE_UP, HIGH);
+  digitalWrite(RLVALVE_DWN, HIGH);
+  digitalWrite(FLVALVE_DWN, HIGH);
+  digitalWrite(RRVALVE_DWN, HIGH);
+  digitalWrite(FRVALVE_DWN, HIGH);
+  digitalWrite(FLVALVE_UP, HIGH);
 }
 
 void loop()
@@ -129,91 +138,92 @@ void loop()
   if (currentMillis - startMillis >= period) {
     updatePressure();
   }
+  
 
-
-  if (RemoteXY.FLUP == 1) {
+  do{
     digitalWrite(FLVALVE_UP, LOW);
+    updatePressure();
+  } while (RemoteXY.FLUP == 1);
+  digitalWrite(FLVALVE_UP, HIGH);
 
-  } else if (RemoteXY.FLUP == 0) {
-    digitalWrite(FLVALVE_UP, HIGH);
-  }
-  if (RemoteXY.FRUP == 1) {
+  do{
     digitalWrite(FRVALVE_UP, LOW);
-
-  } else if (RemoteXY.FLUP == 0) {
-    digitalWrite(FRVALVE_UP, HIGH);
-  }
-  if (RemoteXY.RLUP == 1) {
+    updatePressure();
+  } while (RemoteXY.FRUP == 1);
+  digitalWrite(FRVALVE_UP, HIGH);
+  
+  do{
     digitalWrite(RLVALVE_UP, LOW);
-
-  } else if (RemoteXY.RLUP == 0) {
+    updatePressure();
+    }while (RemoteXY.RLUP == 1);
     digitalWrite(RLVALVE_UP, HIGH);
-  }
-  if (RemoteXY.RRUP == 1) {
+  
+  do{
     digitalWrite(RRVALVE_UP, LOW);
-
-  } else if (RemoteXY.RRUP == 0) {
-    digitalWrite(RRVALVE_UP, HIGH);
-  }
+    updatePressure();
+  }while (RemoteXY.RRUP == 1);
+  digitalWrite(RRVALVE_UP, HIGH);
+    
   //RL Down
-  if (RemoteXY.RLDOWN == 1) {
+  do{
     digitalWrite(RLVALVE_DWN, LOW);
+    updatePressure();
+  } (RemoteXY.RLDOWN == 1);
+  digitalWrite(RLVALVE_DWN, HIGH);
 
-  } else if (RemoteXY.RLDOWN == 0) {
-    digitalWrite(RLVALVE_DWN, HIGH);
-  }
   //FL Down
-  if (RemoteXY.FLDOWN == 1) {
+  do{
     digitalWrite(FLVALVE_DWN, LOW);
-
-  } else if (RemoteXY.FLDOWN == 0) {
-    digitalWrite(FLVALVE_DWN, HIGH);
-  }
-  if (RemoteXY.RRDOWN == 1) {
+    updatePressure();
+  } (RemoteXY.FLDOWN == 1);
+  digitalWrite(FLVALVE_DWN, HIGH);
+  
+  do{
     digitalWrite(RRVALVE_DWN, LOW);
-
-  } else if (RemoteXY.RRDOWN == 0) {
-    digitalWrite(RRVALVE_DWN, HIGH);
-  }
-  if (RemoteXY.RRDOWN == 1) {
-    digitalWrite(RRVALVE_DWN, LOW);
-
-  } else if (RemoteXY.RRDOWN == 0) {
-    digitalWrite(RRVALVE_DWN, HIGH);
-  }
-
-  if (RemoteXY.FRONTUP == 1 && RemoteXY.FRUP != 1 && RemoteXY.FLUP != 1) {
+    updatePressure();
+  } (RemoteXY.RRDOWN == 1);
+  digitalWrite(RRVALVE_DWN, HIGH);
+    
+  do{
+    digitalWrite(FRVALVE_DWN, LOW);
+    updatePressure();
+  } (RemoteXY.FRDOWN == 1);
+  digitalWrite(FRVALVE_DWN, HIGH);
+    
+  do{
     digitalWrite(FRVALVE_UP, LOW);
     digitalWrite(FLVALVE_UP, LOW);
-  } else if (RemoteXY.FRONTUP == 0 && RemoteXY.FRUP != 1 && RemoteXY.FLUP != 1) {
-    digitalWrite(FRVALVE_UP, HIGH);
-    digitalWrite(FLVALVE_UP, HIGH);
-  }
-  if (RemoteXY.FRONTDOWN == 1 && RemoteXY.FRDOWN != 1 && RemoteXY.FLDOWN != 1) {
+    updatePressure();
+  }while(RemoteXY.FRONTUP == 1 && RemoteXY.FRUP != 1 && RemoteXY.FLUP != 1);
+  digitalWrite(FRVALVE_UP, HIGH);
+  digitalWrite(FLVALVE_UP, HIGH);
+
+  do{
     digitalWrite(FRVALVE_DWN, LOW);
     digitalWrite(FLVALVE_DWN, LOW);
-  } else if (RemoteXY.FRONTDOWN == 0 && RemoteXY.FRDOWN != 1 && RemoteXY.FLDOWN != 1) {
-    digitalWrite(FRVALVE_DWN, HIGH);
-    digitalWrite(FLVALVE_DWN, HIGH);
-  }
-  if (RemoteXY.REARDOWN == 1 && RemoteXY.RRDOWN != 1 && RemoteXY.RLDOWN != 1) {
+    updatePressure();
+  }while(RemoteXY.FRONTDOWN == 1 && RemoteXY.FRDOWN != 1 && RemoteXY.FLDOWN != 1);
+  digitalWrite(FRVALVE_DWN, HIGH);
+  digitalWrite(FLVALVE_DWN, HIGH);
+  
+  do{
     digitalWrite(RRVALVE_DWN, LOW);
     digitalWrite(RLVALVE_DWN, LOW);
-  } else if (RemoteXY.REARDOWN == 0 && RemoteXY.RRDOWN != 1 && RemoteXY.RLDOWN != 1) {
-    digitalWrite(RRVALVE_DWN, HIGH);
-    digitalWrite(RLVALVE_DWN, HIGH);
-  }
-  if (RemoteXY.REARUP == 1&& RemoteXY.RRUP != 1 && RemoteXY.RLUP != 1) {
+    updatePressure();
+  }while (RemoteXY.REARDOWN == 1 && RemoteXY.RRDOWN != 1 && RemoteXY.RLDOWN != 1);
+  digitalWrite(RRVALVE_DWN, HIGH);
+  digitalWrite(RLVALVE_DWN, HIGH);
+
+  do{
     digitalWrite(RRVALVE_UP, LOW);
     digitalWrite(RLVALVE_UP, LOW);
-  } else if (RemoteXY.REARUP == 0&& RemoteXY.RRUP != 1 && RemoteXY.RRDOWN != 1 ) {
-    digitalWrite(RRVALVE_UP, HIGH);
-    digitalWrite(RLVALVE_UP, HIGH);
-  }
+    updatePressure();
+  } (RemoteXY.REARUP == 1&& RemoteXY.RRUP != 1 && RemoteXY.RLUP != 1);
+  digitalWrite(RRVALVE_UP, HIGH);
+  digitalWrite(RLVALVE_UP, HIGH);
 
   if (RemoteXY.preset1 == 1) {
     AirToPreset("park");
-
   }
   if (RemoteXY.preset2 == 1) {
     AirToPreset("drive");
@@ -221,8 +231,6 @@ void loop()
   if (RemoteXY.preset3 == 1) {
     AirToPreset("maximum_height");
   }
-
-
 
 }
 float ReadPressureFromVoltage(float voltage) {
@@ -232,27 +240,29 @@ float ReadPressureFromVoltage(float voltage) {
 }
 float ReadSensorVoltage(int circuit) {
 
-  return (analogRead(circuit) * (5.0 / 1023.0));
+  return (analogRead(circuit) * (5.0 / 103.0));
 
 }
 void AirToPreset(char preset) {
-
-
   int frontPressure;
   int rearPressure;
 
-  if (preset == "park") {
+  switch(preset) {
+   case(preset == "park") {
     frontPressure = 40;
     rearPressure = 0;
   }
-  if (preset == "drive") {
+  case(preset == "drive") {
     frontPressure = 115;
     rearPressure = 60;
   }
 
-  if (preset == "maximum_height") {
+  case (preset == "maximum_height") {
     frontPressure = 130;
     rearPressure = 120;
+  }default{
+    break;
+  }
   }
   int frbagpressure = (int)ReadPressureFromVoltage(FR_PRESSURE);
   int flbagpressure = (int)ReadPressureFromVoltage(FL_PRESSURE);
@@ -260,7 +270,7 @@ void AirToPreset(char preset) {
   int rlbagpressure = (int)ReadPressureFromVoltage(RL_PRESSURE);
   while (!(frontPressure - 3 < flbagpressure < frontPressure + 3) &&
          !(frontPressure - 3 < frbagpressure < frontPressure + 3) &&
-         !(rearPressure -3 < rlbagpressure < rearPressure +3) &&
+         !(rearPressure - 3 < rlbagpressure < rearPressure + 3) &&
          !(rearPressure - 3 < rrbagpressure < rearPressure + 3)) {
 
     // Adjust Front Left Pressure
